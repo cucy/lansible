@@ -1,0 +1,120 @@
+---
+# 安装httpd
+- hosts: web
+  remote_user: root
+  vars:
+    http_port: 80
+    max_client: 200
+
+
+  tasks:
+###################
+# copy 模块
+###################
+  - name: copy test
+    copy:
+      src: /tmp/sudoers
+      dest: /etc/sudoers
+      mode: 0440
+      owner: root
+      group: root
+      validate: "visudo -cf %s" # 检查文件配置是否有问题 返回成功了这个action才会成功
+###################
+# file 模块
+###################
+  - name: 改变文件权限
+    file:
+      path: /tmp/hosts
+      owner: apache
+      group: root
+      mode: 0644
+  - name: 创建软连接
+    file:
+      src: /tmp/hosts
+      dest: /tmp/hosts_syslink
+      owner: root
+      state: link
+
+  - name: 创建新文件
+    file:
+      path: /tmp/zrdfile
+      owner: root
+      state: touch
+      mode: 0100
+
+  - name: 创建新目录
+    file:
+      path: /tmp/zrddir
+      owner: apache
+      state: directory
+###################
+# yum 模块
+###################
+  - name: 确认httpd是最后一个版本
+    yum: name=httpd state=latest
+
+###################
+# template 模块
+# cat hosts.j2
+# 127.0.0.1 {{ ansible_hostname }}
+###################
+  - name: template 模块
+    template:
+      src: /tmp/hosts.j2
+      dest: /tmp/hosts
+      owner: root
+      group: root
+      mode: 0600
+      backup: yes
+#     validate:  # 检查逻辑
+
+
+###################
+# shell command 模块
+# 基本相同 shell支持 < > | >> << ; && || 等操作符
+###################
+  - name: shell 模块 $home
+    shell: echo "test" > /opt/test
+
+
+
+
+
+
+
+#  - name:  write the apache config file
+#    template: src=/tmp/httpd.j2 dest=/etc/httpd.conf
+#    notify:
+#      - restart apache
+
+
+
+
+  - name: 确认httpd已经运行
+    service: name=httpd state=started
+
+  handlers:
+  - name: restart apache
+    service: name=httpd state=restarted
+
+
+# 打印变量register 关键字进行注入
+
+
+  - shell: /usr/bin/uptime
+    register: result
+#  - name: Display all variables/facts known for a host
+#    debug:
+#      var: hostvars[inventory_hostname]
+  - debug:
+      var: result.stdout
+
+#  - name : xxxx
+#    debug:
+#      msg: "System {{ inventory_hostname }} has uuid {{ ansible_product_uuid }}"
+
+
+
+
+
+
