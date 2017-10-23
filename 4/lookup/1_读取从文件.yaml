@@ -1,0 +1,8 @@
+---
+- hosts: all
+  vars:
+     contents: "{{ lookup('file', 'data/1.txt') }}"
+
+  tasks:
+
+     - debug: msg="the value of 1.txt is {{ contents }}"

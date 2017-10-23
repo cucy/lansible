@@ -1,0 +1,12 @@
+---
+- hosts: web
+  user : root
+  tasks:
+    - shell : ls /tmp
+      register: result
+      ignore_errors: True # 如果执行错误则不进行
+
+    - shell: echo "{{ result.stdout }}"
+#      when: resultinfo.rc == 4
+
+    - debug: msg="{{ result.stdout }}"

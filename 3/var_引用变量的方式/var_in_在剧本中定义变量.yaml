@@ -1,0 +1,24 @@
+---
+- hosts: web
+  remote_user: root
+  vars:
+      - random_number: "{{ 10000 | random }}"
+      - http_port: 80
+  vars_files:
+    - zrd_var_files
+#    - /opt/var_file  可以是绝对路径，也可以是相对路径
+
+
+  tasks:
+  - name: 拷贝文件 /etc/hosts 到 /tmp/hosts.{{ random_number }}
+    copy: src=/etc/hosts dest=/tmp/hosts.{{ random_number }}
+    notify:
+      - call by /tmp/hosts.random_number
+      - 从外部文件读入变量
+
+  handlers:
+
+  - name: call by /tmp/hosts.random_number
+    debug: msg="call by /tmp/hosts.random_number {{ http_port }}"
+  - name: 从外部文件读入变量
+    debug: msg="call by varfiles zrd_var_files {{ my_name }}  {{ host1.cpu }}"

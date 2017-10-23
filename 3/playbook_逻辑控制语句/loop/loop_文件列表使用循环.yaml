@@ -1,0 +1,9 @@
+---
+- hosts: web
+  user: root
+
+  tasks:
+  - name : copy file list
+    copy: src={{ item }} dest=/opt
+    with_fileglob:
+      - /tmp/*

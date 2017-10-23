@@ -1,0 +1,22 @@
+---
+- hosts: web
+  user: root
+  vars:
+    my_name: zrdwwwwww
+    ran_num: "{{ 1000 | random }}"
+  tasks:
+#  - name: create file
+#    shell: "echo  {{ my_name }} {{ ansible_os_family }} > /tmp/aaaa.j2"
+
+  - name: w conf file
+    template: src=/tmp/aaaa.j2 dest=/tmp/aaa{{ ran_num }}.conf
+    notify:
+      - cat conf file info
+      - debug msg
+
+  handlers:
+    - name: cat conf file info
+      shell: cat /tmp/aaa.conf
+      register: rs
+    - name: debug msg
+      debug: msg="{{ rs.stdout }}"

@@ -1,0 +1,23 @@
+---
+- hosts: web
+  user: root
+  vars:
+    somelist: ["ut1", "testu2"]
+  tasks:
+
+    - name: add several users
+      user: name={{ item }} state=present
+      with_items:
+         - testuser1
+         - testuser2
+
+
+    - name: add u list
+      user: name={{ item }} state=present
+      with_items: "{{ somelist }}"
+
+    - name: aduser example3
+      user: name={{ item.name }} state=present groups={{ item.groups }}
+      with_items:
+        - { name: "xue3", groups: "root"}
+        - { name: "xue31", groups: "zrd"}

@@ -1,0 +1,5 @@
+---
+- hosts: all
+
+  tasks:
+    - debug: msg="{{ lookup('env', 'HOME') }} 是环境变量"

@@ -1,0 +1,17 @@
+---
+- hosts: web
+  user: root
+#  gather_facts: no
+# 获取远程主机的信息需要耗费资源， 如果确认不使用facts中的变量则可以不收集远程主机的信息
+
+  tasks:
+    - name: echo sys info
+      shell: echo {{ ansible_os_family }}
+
+    - name: is RedHat
+      debug: msg=" -------红帽系列------ {{ ansible_default_ipv4  }} {{ ansible_memory_mb.nocache.free }}"
+      when: ansible_os_family == "RedHat"
+
+    - name: is Debian
+      debug: msg="echo Debian"
+      when: ansible_os_family == "Debian"

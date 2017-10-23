@@ -1,0 +1,4 @@
+my_name: zrd
+host1:
+  mem: 4g
+  cpu: 2c

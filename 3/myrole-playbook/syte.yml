@@ -1,0 +1,26 @@
+#---
+#- hosts: web
+#  roles:
+#    - myrole-playbook
+#      when : "ansible_distribution" == "CentOS"
+
+
+---
+
+- hosts: lb
+  user: root
+
+  pre_tasks:
+    - name: pre
+      shell: echo 'hello'
+
+  roles:
+    - { role: some_role }
+
+  tasks:
+    - name: task
+      shell: echo 'still busy'
+
+  post_tasks:
+    - name: post
+      shell: echo 'goodbye'
