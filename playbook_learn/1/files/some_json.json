@@ -1,0 +1,21 @@
+{
+  "hosts": [
+    "host-web1",
+    "host-web2"
+  ],
+  "resources": [
+    {
+      "name": "软件包1",
+      "downloadURL": "下载url.....1"
+    },
+    {
+      "name": "软件包2",
+      "downloadURL": "下载url.....2"
+    }
+  ],
+  "mysql": {
+    "comp":"oracle",
+    "listen_port": "3306",
+    "opensource": true
+  }
+}

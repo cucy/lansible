@@ -1,0 +1,6 @@
+---
+- hosts: test
+  roles:
+    - common
+  #  传递参数
+    - web

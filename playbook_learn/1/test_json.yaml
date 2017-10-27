@@ -1,0 +1,36 @@
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - set_fact:
+        from_lookup_with_from_json: "{{ lookup('file','files/test.json') | from_json }}"
+
+    - set_fact:
+        from_lookup_without_from_json: "{{ lookup('file','files/test.json') }}"
+
+    - name: Save the lookup value stored in a variable in a file for comparison
+      copy: content="{{ from_lookup_with_from_json }}" dest=./1_from_json.txt
+
+    - name: Save the lookup value stored in a variable in a file for comparison (they are the same)
+      copy: content="{{ from_lookup_without_from_json }}" dest=./2_without_from_json.txt
+
+    - name: This query is run against lookup value with from_json stored in a variable
+      debug: msg="{{ from_lookup_with_from_json | json_query(query) }}"
+      vars:
+        query: "Foods[].{id: Id, for: (Tags[?Key=='For'].Value)[0]} | [?for=='Tigger'].id"
+
+    - name: This query is run against lookup value without from_json stored in a variable
+      debug: msg="{{ from_lookup_without_from_json | json_query(query) }}"
+      vars:
+        query: "Foods[].{id: Id, for: (Tags[?Key=='For'].Value)[0] } | [?for=='Tigger'].id"
+
+    - name: This query is run directly against lookup value with from_json
+      debug: msg="{{ lookup('file','test.json') | from_json | json_query(query) }}"
+      vars:
+        query: "Foods[].{id: Id, for: (Tags[?Key=='For'].Value)[0]} | [?for=='Tigger'].id"
+
+    - name: This query is run directly against lookup value without from_json - the result is empty - why?
+      debug: msg="{{ lookup('file','test.json') | json_query(query) }}"
+      vars:
+        query: "Foods[].{id: Id, for: (Tags[?Key=='For'].Value)[0]} | [?for=='Tigger'].id"

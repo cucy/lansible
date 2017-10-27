@@ -1,0 +1,48 @@
+---
+- hosts: all
+  gather_facts: no
+  vars:
+    http_port: 1801
+    max_clients: 200
+    some_msg_from_file:  "{{ lookup('file', 'files/test.txt') }}"
+    # 读取json格式的文件
+    host_list_from_json_file: "{{ (lookup('file', 'files/some_json.json') | from_json ).get('hosts') }}"
+    get_resources_dict_obj: "{{ (lookup('file', 'files/some_json.json') | from_json ).get('resources') }}"
+    get_dict_obj: "{{ (lookup('file', 'files/some_json.json') | from_json ) | json_query('resources[]') }}"
+    get_dict_obj1: "{{ (lookup('file', 'files/some_json.json') | from_json ).get('mysql') }}"
+
+  remote_user: root
+  become_method: sudo
+  become_user: root
+
+  tasks:
+  - name: 安装httpd
+    yum: name=httpd state=latest
+    remote_user: root
+  - name: 写httpd配置文件
+    template: src=templates/httpd.j2 dest=/etc/httpd/conf/httpd.conf
+    notify:
+      - 重启httpd
+  - name: 确认httpd已经运行开机自启动
+    service: name=httpd state=started
+
+
+
+
+  - name: 读取列表
+    debug: msg="{{ item }}"
+    with_items: "{{host_list_from_json_file}}"
+
+  - name: 读取字典方法1
+    debug: msg="下载地址:{{item.downloadURL}} === 软件包名字:{{item.name}}"
+    with_items: "{{ get_resources_dict_obj }}"
+
+  - name: 读取字典方法2
+    debug: msg="{{item.key}} {{item.value}}"
+    with_dict: "{{get_dict_obj1}}"
+
+
+
+  handlers:
+    - name: 重启httpd
+      service: name=httpd state=restarted
